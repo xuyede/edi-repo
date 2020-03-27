@@ -1,7 +1,9 @@
+/**
+ * 获取设备相关
+ */
 
 export function getDeviceInfo() {
   const ua = window.navigator.userAgent.toLowerCase();
-  /* eslint-disable no-nested-ternary, max-len, no-useless-escape */
   const device = (ua.indexOf('iphone') !== -1 || ua.indexOf('ipad') !== -1 || ua.indexOf('ipod') !== -1) ? 'ios' : (ua.indexOf('android') !== -1 ? 'android' : '');
   let version = '';
   if (device === 'ios') {
