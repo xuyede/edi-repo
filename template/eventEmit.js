@@ -1,7 +1,7 @@
 /**
- * 事件总线  
- * import EventBus from 'eventBus.js';
- * window.EventBus = EventBus;
+ * 自定义事件
+ * import EventEmit from 'eventEmit.js';
+ * window.EventEmit = EventEmit;
  */
 
 class EventEmit {
