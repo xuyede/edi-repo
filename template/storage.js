@@ -4,11 +4,13 @@
 
 const setSessionStorage = (key, value) => {
   const storage = window.sessionStorage
-  if (typeof value === 'string') {
-    storage.setItem(key, value)
-  } else {
-    storage.setItem(key, JSON.stringify(value))
-  }
+  try {
+    if (typeof value === 'string') {
+      storage.setItem(key, value)
+    } else {
+      storage.setItem(key, JSON.stringify(value))
+    }
+  } catch (e) {}
 }
 
 const getSessionStorage = (key) => {
@@ -46,18 +48,20 @@ const getLocalStorage = (key) => {
 let timer = null
 const setLocalStorage = (key, value, expires = null) => {
   const storage = window.localStorage
-  if (typeof value === 'string') {
-    storage.setItem(key, value)
-  } else {
-    storage.setItem(key, JSON.stringify(value))
-  }
+  try {
+    if (typeof value === 'string') {
+      storage.setItem(key, value)
+    } else {
+      storage.setItem(key, JSON.stringify(value))
+    }
+  } catch (e) {}
 
   if (expires) {
     timer && clearTimeout(timer)
     let timeout = expires * 24 * 3600 * 1000
     timer = setTimeout(() => {
-      clearTimeout(timer)
       removeLocalStorage(key)
+      clearTimeout(timer)
     }, timeout);
   }
 }
