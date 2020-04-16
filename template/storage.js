@@ -10,7 +10,9 @@ const setSessionStorage = (key, value) => {
     } else {
       storage.setItem(key, JSON.stringify(value))
     }
-  } catch (e) {}
+  } catch (e) {
+    console.warn('[error] setSessionStorage 无痕模式')
+  }
 }
 
 const getSessionStorage = (key) => {
@@ -54,7 +56,9 @@ const setLocalStorage = (key, value, expires = null) => {
     } else {
       storage.setItem(key, JSON.stringify(value))
     }
-  } catch (e) {}
+  } catch (e) {
+    console.warn('[error] setLocalStorage 无痕模式')
+  }
 
   if (expires) {
     timer && clearTimeout(timer)
