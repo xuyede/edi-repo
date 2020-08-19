@@ -66,71 +66,68 @@ const removeLocalStorage = (key) => {
   return window.localStorage.removeItem(key);
 };
 
-const supportStorage = () => {
-  let storage = (window && window.localStorage) || null;
-  if (storage) {
-    try {
-      storage.setItem("__STORAGE_TEST__", true);
-      storage.removeItem("__STORAGE_TEST__");
-      return true;
-    } catch(e){
-      return false;
-    }
-  } else {
-    return false;
-  }
-};
-
 const storageMap = {
   removeLocalStorage, setLocalStorage, getLocalStorage,
   removeSessionStorage, setSessionStorage, getSessionStorage
 };
 
-const _localStorage = (behavior, key, value, expires, original) => {
-  let suffix = 'LocalStorage';
-  return storageMap[`${behavior}${suffix}`](key, value, expires);
-};
-
-const _sessionStorage = (behavior, key, value, original) => {
-  let suffix = 'SessionStorage';
-  return storageMap[`${behavior}${suffix}`](key, value);
-};
-
-const dealStorage = (storage, behavior, key, value, expires, original) => {
-  const isLocal = storage.indexOf('local') != -1;
-
-  if (isLocal) {
-    return _localStorage(behavior, key, value, expires, original);
-  } else {
-    return _sessionStorage(behavior, key, value, original);
-  }
-};
-
-const validateBehavior = (behavior) => {
-  const behaviorSet = ['set', 'get', 'remove'];
-  return behaviorSet.some(i => i == behavior);
-};
-
-const storage = ({storage = 'local', behavior, key, value, expires, original}) => {
-  if (!validateBehavior(behavior)) {
-    console.error(`[error:storage] ${behavior}: 没有该操作行为(set, get, remove)`);
-    return;
+/**
+ * storage
+ * @param {String} type 类型 
+ */
+class Storage {
+  constructor( type ) {
+    this.set = null;
+    this.get = null;
+    this.remove = null;
+    this.type = type || 'local';
+    
+    if (this.supportStorage()) {
+      this.buildStorage();
+    } else {
+      console.error('[error:storage] Storage错误，如果是浏览器环境，请检查是否打开了无痕模式');
+    }
   }
 
-  if (supportStorage()) {
-    return dealStorage(storage, behavior, key, value, expires, original);
-  } else {
-    console.error('[error:storage] 浏览器不支持Storage？请检查是否打开了无痕模式');
+  _localStorage() {
+    let suffix = 'LocalStorage';
+    this.set = storageMap[`set${suffix}`];
+    this.get = storageMap[`get${suffix}`];
+    this.remove = storageMap[`remove${suffix}`];
   }
-};
 
+  _sessionStorage() {
+    let suffix = 'SessionStorage';
+    this.set = storageMap[`set${suffix}`];
+    this.get = storageMap[`get${suffix}`];
+    this.remove = storageMap[`remove${suffix}`];
+  };
 
-export default storage;
-// export {
-//   storage,
-//   setSessionStorage,
-//   getSessionStorage,
-//   removeSessionStorage,
-//   setLocalStorage,
-//   getLocalStorage
-// }
+  buildStorage() {
+    const isLocal = this.type.indexOf('local') != -1;
+    if (isLocal) {
+      this._localStorage();
+    } else {
+      this._sessionStorage();
+    }
+  }
+
+  /** 检测 storage可用性 */
+  supportStorage() {
+    let storage = (window && window.localStorage) || null;
+    if (storage) {
+      try {
+        storage.setItem("__STORAGE_TEST__", true);
+        storage.removeItem("__STORAGE_TEST__");
+        return true;
+      } catch(e){
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+  
+}
+
+export default Storage;
